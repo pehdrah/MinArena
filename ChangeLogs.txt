@@ -1,0 +1,6 @@
+1.2
+
+Yes it is strange but it starts on the version 1.2
+
+- Implementing geometry input through files
+- Single Makefile for both applications
