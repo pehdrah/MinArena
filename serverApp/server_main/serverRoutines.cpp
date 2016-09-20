@@ -25,6 +25,7 @@ int arenaManager(int pipeIn, int pipeOut)
 	int size, status, forked, i, aSize, arena, clientPoolSize;
 	char *buffer;
 	bool *clients;
+	bool isArena;
 	ArenaPipes **aPipes;
 	MessageHeader *header;
 	ClientMessage *msg;
@@ -41,6 +42,8 @@ int arenaManager(int pipeIn, int pipeOut)
 	buffer = (char *)prepareClientBuffer();
 	header = (MessageHeader *)buffer;
 	msg = (ClientMessage *)(buffer + sizeof(MessageHeader));
+
+	isArena = false;
 
 	i = 0;
 	while(i < aSize)
@@ -70,16 +73,16 @@ int arenaManager(int pipeIn, int pipeOut)
 				write(aPipes[arena]->pipeIn, buffer, size);
 				if(header->msgType == 1)
 				{
-//					cout << "Someone Arrived! " << endl;
+					cout << "Someone Arrived! " << endl;
 					if(!clients[header->senderId])
 					{
 						clients[header->senderId] = true;
 					}
 					else
 					{
-						//header->senderType = 'S';
-						//header->msgType = -2;
-						//write(pipeOut, buffer, size);
+						header->senderType = 'S';
+						header->msgType = -2;
+						write(pipeOut, buffer, size);
 					}
 				}
 				else if(header->msgType == 2)
@@ -103,10 +106,13 @@ int arenaManager(int pipeIn, int pipeOut)
 				forked = fork();
 				if(forked == 0)
 				{
+					arena = header->senderId;
+					aSize = 0;
+					isArena = true;
 					delete aPipes;
 					delete buffer;
 					delete clients;
-					serverProcess(header->senderId, pipe1[0], pipeOut);
+					serverProcess(arena, pipe1[0], pipeOut);
 				}
 				else
 				{
@@ -160,7 +166,7 @@ int arenaManager(int pipeIn, int pipeOut)
 	close(pipeOut);
 
 	i = 0;
-	while(i < size)
+	while(i < aSize)
 	{
 		if(aPipes[i] != 0)
 		{
@@ -172,6 +178,15 @@ int arenaManager(int pipeIn, int pipeOut)
 			delete aPipes[i];
 		}
 		i++;
+	}
+
+	if(isArena)
+	{
+		cout << "Finishing Arena " << arena << endl;
+	}
+	else
+	{
+		cout << "Finishing Arena Manager" << endl;
 	}
 
 	return 0;

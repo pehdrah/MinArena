@@ -1,7 +1,7 @@
 #include "objectStats.h"
-#include<fstream>
-#include<string>
-#include<sstream>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -25,11 +25,16 @@ void loadPrimaryBasics(const char* fileName)
 void primaryFinish()
 {
 	int i;
+	i = 0;
 	while(i < 512)
 	{
 		if(primaryTable[i] != 0)
 		{
-			statsTable[i].ps = primaryTable[i];	
+			statsTable[i].ps = primaryTable[i];
+		}
+		else
+		{
+			statsTable[i].ps = new PrimaryStats;
 		}
 		i++;
 	}
@@ -58,56 +63,52 @@ void loadSecondaryStats(const char* fileName)
 	file.open(fileName);
 
 	getline(file, line);
-	while(!file.eof())
+	while(file.good())
 	{
-		if(line != "")
+		if(line[0] != '#' && line != "")
 		{
-			if(line[0] != '#')
+			pos = line.find(":");
+			token = line.substr(0, pos);
+			stringstream(token) >> tPos;
+			line = line.substr(pos + 1);
+
+			if(tPos < 512)
 			{
-				pos = line.find(":");
+				pos = line.find(",");
 				token = line.substr(0, pos);
-				stringstream(token) >> tPos;
+				stringstream(token) >> a;
+				statsTable[tPos].ss.melee = a;
 				line = line.substr(pos + 1);
 
-				if(tPos < 512)
-				{
-					pos = line.find(",");
-					token = line.substr(0, pos);
-					stringstream(token) >> a;
-					statsTable[tPos].ss.melee = a;
-					line = line.substr(pos + 1);
+				pos = line.find(",");
+				token = line.substr(0, pos);
+				stringstream(token) >> a;
+				statsTable[tPos].ss.defense = a;
+				line = line.substr(pos + 1);
 
-					pos = line.find(",");
-					token = line.substr(0, pos);
-					stringstream(token) >> a;
-					statsTable[tPos].ss.defense = a;
-					line = line.substr(pos + 1);
+				pos = line.find(",");
+				token = line.substr(0, pos);
+				stringstream(token) >> a;
+				statsTable[tPos].ss.topSpeed = a;
+				line = line.substr(pos + 1);
 
-					pos = line.find(",");
-					token = line.substr(0, pos);
-					stringstream(token) >> a;
-					statsTable[tPos].ss.topSpeed = a;
-					line = line.substr(pos + 1);
+				pos = line.find(",");
+				token = line.substr(0, pos);
+				stringstream(token) >> a;
+				statsTable[tPos].ss.startMelee = a;
+				line = line.substr(pos + 1);
 
-					pos = line.find(",");
-					token = line.substr(0, pos);
-					stringstream(token) >> a;
-					statsTable[tPos].ss.startMelee = a;
-					line = line.substr(pos + 1);
+				pos = line.find(",");
+				token = line.substr(0, pos);
+				stringstream(token) >> a;
+				statsTable[tPos].ss.meleeTicks = a;
+				line = line.substr(pos + 1);
 
-					pos = line.find(",");
-					token = line.substr(0, pos);
-					stringstream(token) >> a;
-					statsTable[tPos].ss.meleeTicks = a;
-					line = line.substr(pos + 1);
-
-					pos = line.find(";");
-					token = line.substr(0, pos);
-					stringstream(token) >> a;
-					statsTable[tPos].ss.hittedTicks = a;
-
-					statsTable[tPos].ss.ticks = 0;
-				}
+				pos = line.find(";");
+				token = line.substr(0, pos);
+				stringstream(token) >> a;
+				statsTable[tPos].ss.hittedTicks = a;
+				statsTable[tPos].ss.ticks = 0;
 			}
 		}
 		getline(file, line);
@@ -123,7 +124,6 @@ void copyObjectStats(ObjectStats *src, ObjectStats *dst)
 	{
 		dst->ps = new PrimaryStats();
 	}
-
 	copyPrimaryStats(src->ps, dst->ps);
 	copySecondaryStats(&(src->ss), &(dst->ss));
 }

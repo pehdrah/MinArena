@@ -294,14 +294,12 @@ ArenaObjectNode* Structure::getNode(int id, unsigned char type)
 	aon = objects[type];
 	while(aon != 0)
 	{
+		//cout << aon << endl;
 		if(aon->obj->id == id)
 		{
 			break;
 		}
-		else
-		{
-			aon = aon->next;
-		}
+		aon = aon->next;
 	}
 
 	return aon;

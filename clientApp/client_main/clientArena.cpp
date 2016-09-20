@@ -64,7 +64,7 @@ void ClientArena::checkEvents(State current)
 		//Check players
 		if(playerObjects[i] != 0 && playerIds[i] != -1)
 		{
-			//cout << i << ": " << (int)playerObjects[i]->stats->ps->state << ", " << (int)current.stats[i].state << ", " << (int)playerObjects[i]->stats->ss.ticks << endl;
+			//cout << i << ": " << (int)playerObjects[i]->getState() << ", " << (int)current.stats[i].state << ", " << endl;
 
 			playerObjects[i]->stats = current.stats + i;
 

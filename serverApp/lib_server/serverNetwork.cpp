@@ -42,13 +42,14 @@ int bindServer(int socketFd)
 
 int receiverProcess(int socketFd, int pipeOut, int sockPipeOut)
 {
-	int status, bufferSize;
+	int status, bufferSize, stuff;
 	char *buffer;
 	MessageHeader *header;
 	sockaddr_in addr;
 	sockaddr_in *toSend;
 	socklen_t len;
 
+	len = sizeof(sockaddr_in);
 	bufferSize = clientBufferSize();
 	buffer = (char *)prepareClientBuffer();
 	header = (MessageHeader *)buffer;
@@ -57,14 +58,17 @@ int receiverProcess(int socketFd, int pipeOut, int sockPipeOut)
 	status = recvfrom(socketFd, buffer, bufferSize, 0, (struct sockaddr *)&addr, &len);
 	while(status > 0)
 	{
-		//cout << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << endl;
+		//stuff = ntohs(addr.sin_port);
 		if(header->senderType == 'C')
 		{
 			write(pipeOut, buffer, bufferSize);
 			if(header->msgType == 1)
 			{
+				cout << "addr - " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << ";" << len << ";" << sizeof(sockaddr_in) << endl;
 				*toSend = addr;
-				cout << inet_ntoa(toSend->sin_addr) << ":" << ntohs(toSend->sin_port) << endl;
+				//toSend->sin_addr.s_addr = addr.sin_addr.s_addr;
+				//toSend->sin_port = addr.sin_port;
+				//cout << "To send - " << inet_ntoa(toSend->sin_addr) << ":" << ntohs(toSend->sin_port) << endl;
 				write(sockPipeOut, buffer, bufferSize);
 			}
 			else if(header->msgType == 2)

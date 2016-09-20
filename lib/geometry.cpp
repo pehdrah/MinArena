@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -43,37 +44,39 @@ void readGeometries()
 	file.open("Geometries.dat");
 
 	getline(file, line);
-	while(line != "")
+	while(file.good())
 	{
-		pos = line.find(",");
-		token = line.substr(0, pos);
-		stringstream(token) >> type;
-		line = line.substr(pos+1);
-		pos = line.find(";");
-		token = line.substr(0, pos);
-		stringstream(token) >> kind;
-		getline(file, line);
-		stringstream(line) >> size;
-		nVertexesTable[type][kind] = size;
-		originalsTable[type][kind] = new Vertex[size];
-		getline(file, line);
-		i = 0;
-		while(line != "e")
+		if(line != "")
 		{
-			pos = line.find(";");
-			token = line.substr(1,pos-1);
+			pos = line.find(",");
+			token = line.substr(0, pos);
+			stringstream(token) >> type;
 			line = line.substr(pos+1);
-			pos = token.find(",");
-			tok = token.substr(0, pos);
-			stringstream(tok) >> x;
-			tok = token.substr(pos+1);
-			stringstream(tok) >> y;
-			originalsTable[type][kind][i].x = x;
-			originalsTable[type][kind][i].y = y;
-			i++;
-		}	
-		getline(file, line);
-
+			pos = line.find(";");
+			token = line.substr(0, pos);
+			stringstream(token) >> kind;
+			getline(file, line);
+			stringstream(line) >> size;
+			nVertexesTable[type][kind] = size;
+			originalsTable[type][kind] = new Vertex[size];
+			getline(file, line);
+			i = 0;
+			while(line != "e")
+			{
+				pos = line.find(";");
+				token = line.substr(1,pos-1);
+				line = line.substr(pos+1);
+				pos = token.find(",");
+				tok = token.substr(0, pos);
+				stringstream(tok) >> x;
+				tok = token.substr(pos+1);
+				stringstream(tok) >> y;
+				originalsTable[type][kind][i].x = x;
+				originalsTable[type][kind][i].y = y;
+				i++;
+			}
+			cout << "Geometry of " << type << "-" << kind << " loaded" << endl;
+		}		
 		getline(file, line);
 	}
 

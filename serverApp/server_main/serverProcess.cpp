@@ -48,6 +48,8 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 	arena = new Arena(800, 600);
 	s = new ObjectStats();
 	*s = craftObjectStats(9);
+	s->ps->box.x = 200;
+	s->ps->box.y = 200;
 	arena->addObject(new Object(s));
 
 	server = new Server(serverId, pipeIn, pipeOut);
@@ -77,7 +79,7 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 			{
 				if(!sa->playerConnected(client))
 				{
-//					cout << "Player connecting: " << client << endl;
+					cout << "Player connecting: " << client << endl;
 					server->addPlayer(client);
 					s = new ObjectStats();
 					*s = craftObjectStats(message & 0x000000FF);
@@ -128,7 +130,7 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 			{
 				if(players[i] != -1)
 				{
-					cout << players[i] << ": " << playerStatus[i] << " ";
+					//cout << players[i] << ": " << playerStatus[i] << " ";
 					if(playerStatus[i] > 200)
 					{	
 						server->dropPlayer(players[i]);

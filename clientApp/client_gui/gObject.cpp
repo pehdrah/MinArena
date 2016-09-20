@@ -15,6 +15,7 @@ G_Object::G_Object(PrimaryStats *stats)
 	this->stats = stats;
 	id = 0;
 	animation = 0;
+	startMelee = 4;
 	surface = new Surface;
 	makeSurface(stats->type, stats->kind, surface);
 	surface->box = &(stats->box);

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -31,9 +32,9 @@ void loadPrimaryStats(const char* fileName)
 	file.open(fileName);
 
 	getline(file, line);
-	while(line != "")
+	while(file.good())
 	{
-		if(line[0] != '#')
+		if(line[0] != '#' && line != "")
 		{
 			pos = line.find(":");
 			token = line.substr(0, pos);
@@ -50,6 +51,7 @@ void loadPrimaryStats(const char* fileName)
 
 				pos = line.find(",");
 				token = line.substr(0, pos);
+				cout << token << " ";
 				stringstream(token) >> primaryTable[tPos]->box.h;
 				line = line.substr(pos + 1);
 
@@ -75,6 +77,8 @@ void loadPrimaryStats(const char* fileName)
 				primaryTable[tPos]->dy = 0;
 				primaryTable[tPos]->state = 0;
 				primaryTable[tPos]->life = primaryTable[tPos]->maxLife;
+
+				cout << tPos << " loaded! " << primaryTable[tPos]->box.h << endl;
 			}
 		}
 	

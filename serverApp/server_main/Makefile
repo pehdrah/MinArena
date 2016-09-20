@@ -1,7 +1,7 @@
 all: serverArena serverProcess serverRoutines serverMain serverExec
 
 serverExec:
-	c++ -o test serverMain.o serverProcess.o serverRoutines.o serverArena.o -L../lib_server -L../../lib/ -lBase -lServer
+	c++ -o serverApp serverMain.o serverProcess.o serverRoutines.o serverArena.o -L../lib_server -L../../lib/ -lBase -lServer
 
 serverMain:
 	c++ -c serverMain.cpp -I../

@@ -110,6 +110,8 @@ int callArena(SDL_Surface* screen, int character, int port)
   
 	s = new PrimaryStats;
 	*s = craftPrimaryStats(9);
+	s->box.x = 200;
+	s->box.y = 200;
 	cArena->addObject(new G_Object(s));
 
 	turnTime = 100;
@@ -197,9 +199,9 @@ int callArena(SDL_Surface* screen, int character, int port)
 					fainted++;
 				}
 
-				cout << "Drawing! ";
+				//cout << "Drawing! ";
 				gArena->drawArenaPiece(playerObj);
-				cout << arenaState << endl;
+				//cout << arenaState << endl;
 //				cout << SDL_GetTicks() - t1 << endl;
 
 				drawed[draw] = true;
