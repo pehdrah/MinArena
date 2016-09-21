@@ -163,8 +163,53 @@ PrimaryStats* G_Object::getPrimaryStats()
 	return stats;
 }
 
+/**
+* Function used to change the state of the character and sync animation
+*/
 void G_Object::changeState(unsigned char state)
 {
 	stats->state = state;
 	animation = 0;
+}
+
+/**
+* Function used to get the current state of the animation.
+*/
+Rect G_Object::getAnimationBox()
+{
+	Rect r;
+	int w, h, d, a;
+
+	w = 30;
+	h = 30;
+	d = getDirection(getState());
+
+	r.x = w*d;
+	r.w = w - 1;
+	r.h = h - 1;
+
+	if(isMoving(getState()))
+	{
+		if(animation < 2)
+		{
+			a = 0;
+		}
+		else
+		{
+			a = 1;
+		}
+		animation++;
+		if(animation > 3)
+		{
+			animation = 0;
+		}
+
+		r.y = h + h*a;
+	}
+	else
+	{
+		r.y = 0;
+	}
+
+	return r;
 }

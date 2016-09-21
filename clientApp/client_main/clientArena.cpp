@@ -52,13 +52,13 @@ void ClientArena::checkEvents(State current)
 		}
 		else if(playerIds[i] != -1 && current.players[i] == -1)
 		{
-			cout << "removendo: " << playerIds[i] << " ";
+			//cout << "removendo: " << playerIds[i] << " ";
 			arena->removeObject(playerObjects[i]);
-			cout << "removido ";
+			//cout << "removido ";
 			playerObjects[i] = 0;
-			cout << "test 1 ";
+			//cout << "test 1 ";
 			playerIds[i] = -1;
-			cout << "test 2 ";
+			//cout << "test 2 ";
 		}
 
 		//Check players

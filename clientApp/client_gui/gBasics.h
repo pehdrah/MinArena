@@ -16,5 +16,6 @@ SDL_Surface* callWindow(int w, int h);
 SDL_Surface* loadImage(const char* filename, int x, int y);
 SDL_Surface* loadCharacter(const char* filename, int r, int g, int b);
 Rect makeStateBox(Rect *box, unsigned char state);
+SDL_Rect toSDL_Rect(Rect r);
 
 #endif

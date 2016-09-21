@@ -55,7 +55,7 @@ bool G_Structure::addObject(G_Object* obj)
 		aux->next = objects[hash];
 		objects[hash] = aux;
 		obj->id = i;
-		cout << "added type: " << (int)obj->getType() << " id: " << obj->id << endl;
+		//cout << "added type: " << (int)obj->getType() << " id: " << obj->id << endl;
 	}
 
 	return add;

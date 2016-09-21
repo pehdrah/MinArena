@@ -12,6 +12,8 @@ using namespace std;
 
 int client_id, server_id;
 
+void addBox(G_Arena* arena, int x, int y);
+
 int main(int argc, char** argv)
 {
 	bool quit;
@@ -59,14 +61,14 @@ int callArena(SDL_Surface* screen, int character, int port)
 {
 	bool quit, sendEvent;
 	bool *drawed;
-	int i, x, y, w, h, id, event, arenaState, status, fainted, turnTime, attempts, draw;
+	int i, id, event, arenaState, status, fainted, turnTime, attempts, draw, lost;
 	Client* client;
 	ClientArena* cArena;
 	G_Object *playerObj;
 	PrimaryStats *s;
 	State current;
 	G_Arena *gArena;
-	long long unsigned int t0, t1, te, tgraph;
+	long long unsigned int t0, t1, te, tgraph, sum, spike, turns;
 	ifstream file;
 	string line, address;
 
@@ -99,23 +101,52 @@ int callArena(SDL_Surface* screen, int character, int port)
 	}
 	cout << "Client connected" << endl;
 
-	w = 800;
-	h = 600;
-
 	current = client->getCurrentState();
 
-	gArena = new G_Arena(screen, w, h);
+	gArena = new G_Arena(screen, 800, 1200);
 	cArena = new ClientArena(gArena);
 	cArena->checkEvents(current);
   
 	s = new PrimaryStats;
-	*s = craftPrimaryStats(9);
-	s->box.x = 200;
-	s->box.y = 200;
-	cArena->addObject(new G_Object(s));
+	addBox(gArena, 200, 200);
+	addBox(gArena, 200, 400);
+	addBox(gArena, 200, 600);
+	addBox(gArena, 200, 800);
+	addBox(gArena, 200, 1000);
+	addBox(gArena, 600, 200);
+	addBox(gArena, 600, 400);
+	addBox(gArena, 600, 600);
+	addBox(gArena, 600, 800);
+	addBox(gArena, 600, 1000);
+/*
+	addBox(gArena, 300, 200);
+	addBox(gArena, 300, 400);
+	addBox(gArena, 300, 600);
+	addBox(gArena, 300, 800);
+	addBox(gArena, 300, 1000);
+	addBox(gArena, 500, 200);
+	addBox(gArena, 500, 400);
+	addBox(gArena, 500, 600);
+	addBox(gArena, 500, 800);
+	addBox(gArena, 500, 1000);
+	addBox(gArena, 100, 200);
+	addBox(gArena, 100, 400);
+	addBox(gArena, 100, 600);
+	addBox(gArena, 100, 800);
+	addBox(gArena, 100, 1000);
+	addBox(gArena, 400, 200);
+	addBox(gArena, 400, 400);
+	addBox(gArena, 400, 600);
+	addBox(gArena, 400, 800);
+	addBox(gArena, 400, 1000);
+*/
 
 	turnTime = 100;
 	i = 0;
+	sum = 0;
+	spike = 0;
+	turns = 0;
+	lost = 0;
 	t0 = SDL_GetTicks();
 	sendEvent = true;
 	quit = false;
@@ -174,6 +205,7 @@ int callArena(SDL_Surface* screen, int character, int port)
 				{
 					cout << arenaState << " gotta use prediction? " << client->getCurrentStateNumber() << endl;
 					arenaState++;
+					lost++;
 					t0 = t0 + turnTime;
 
 					sendEvent = true;
@@ -199,10 +231,16 @@ int callArena(SDL_Surface* screen, int character, int port)
 					fainted++;
 				}
 
+				t1 = SDL_GetTicks();
 				//cout << "Drawing! ";
 				gArena->drawArenaPiece(playerObj);
 				//cout << arenaState << endl;
-//				cout << SDL_GetTicks() - t1 << endl;
+				tgraph = SDL_GetTicks() - t1;
+				if(tgraph > spike)
+				{
+					spike = tgraph;
+				}
+				sum = sum + tgraph;
 
 				drawed[draw] = true;
 
@@ -228,8 +266,13 @@ int callArena(SDL_Surface* screen, int character, int port)
 		{
 			quit = true;
 		}
+
+		turns++;
 	}
 	client->disconnect();
+	cout << "Average time to draw(ms): " << (sum*1.0)/turns << endl;
+	cout << "Time to draw spike(ms): " << spike << endl;
+	cout << "Lost packets: " << lost << " tax:" << (lost*1.0)/turns*100 << endl;
 
 	return 0;
 }
@@ -287,4 +330,16 @@ int callCharSelect(SDL_Surface* screen)
 	}
 
 	return selection;
+}
+
+
+void addBox(G_Arena* arena, int x, int y)
+{
+	PrimaryStats *s;
+
+	s = new PrimaryStats();
+	*s = craftPrimaryStats(9);
+	s->box.x = x;
+	s->box.y = y;
+	arena->addObject(new G_Object(s));
 }

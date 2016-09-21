@@ -66,9 +66,6 @@ int receiverProcess(int socketFd, int pipeOut, int sockPipeOut)
 			{
 				cout << "addr - " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << ";" << len << ";" << sizeof(sockaddr_in) << endl;
 				*toSend = addr;
-				//toSend->sin_addr.s_addr = addr.sin_addr.s_addr;
-				//toSend->sin_port = addr.sin_port;
-				//cout << "To send - " << inet_ntoa(toSend->sin_addr) << ":" << ntohs(toSend->sin_port) << endl;
 				write(sockPipeOut, buffer, bufferSize);
 			}
 			else if(header->msgType == 2)

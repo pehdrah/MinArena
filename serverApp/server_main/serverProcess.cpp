@@ -10,10 +10,12 @@
 
 using namespace std;
 
+void addBox(Arena* arena, int x, int y);
+
 int serverProcess(int serverId, int pipeIn, int pipeOut)
 {
 	struct timeval t0, t1;
-	long full, first, elapsed;
+	long full, elapsed, sum, spike;
 	Server* server;
 	ServerArena* sa;
 	State state;
@@ -45,12 +47,39 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 	loadObjectsBasics("primaryTable.dat", "secondaryTable.dat");
 	loadGeometries();
 
-	arena = new Arena(800, 600);
-	s = new ObjectStats();
-	*s = craftObjectStats(9);
-	s->ps->box.x = 200;
-	s->ps->box.y = 200;
-	arena->addObject(new Object(s));
+	arena = new Arena(800, 1200);
+	addBox(arena, 200, 200);
+	addBox(arena, 200, 400);
+	addBox(arena, 200, 600);
+	addBox(arena, 200, 800);
+	addBox(arena, 200, 1000);
+	addBox(arena, 600, 200);
+	addBox(arena, 600, 400);
+	addBox(arena, 600, 600);
+	addBox(arena, 600, 800);
+	addBox(arena, 600, 1000);
+/*
+	addBox(arena, 300, 200);
+	addBox(arena, 300, 400);
+	addBox(arena, 300, 600);
+	addBox(arena, 300, 800);
+	addBox(arena, 300, 1000);
+	addBox(arena, 500, 200);
+	addBox(arena, 500, 400);
+	addBox(arena, 500, 600);
+	addBox(arena, 500, 800);
+	addBox(arena, 500, 1000);
+	addBox(arena, 100, 200);
+	addBox(arena, 100, 400);
+	addBox(arena, 100, 600);
+	addBox(arena, 100, 800);
+	addBox(arena, 100, 1000);
+	addBox(arena, 400, 200);
+	addBox(arena, 400, 400);
+	addBox(arena, 400, 600);
+	addBox(arena, 400, 800);
+	addBox(arena, 400, 1000);
+*/
 
 	server = new Server(serverId, pipeIn, pipeOut);
 	sa = new ServerArena(arena);
@@ -58,8 +87,9 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 	gettimeofday(&t0, 0);
 	turnTime = 100000;
 	full = 0;
-	first = 0;
 	turn = 0;
+	sum = 0;
+	spike = 0;
 	attempts = 4;
 	quit = false;
 	i = 0;
@@ -110,11 +140,17 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 		{
 			sa->changeState();
 			gettimeofday(&t1, 0);
-			full = t1.tv_sec*1000000 + t1.tv_usec;
-			//cout << full - elapsed << endl;
-			first = elapsed;
+			elapsed = (t1.tv_sec*1000000 + t1.tv_usec - elapsed);
+			sum = sum + elapsed;
+			if(elapsed > spike)
+			{
+				spike = elapsed;
+			}
+
 			server->sendStateToAll(sa->getCurrentState());
 			server->nextState();
+
+			//Time adjustment for the next turn
 			t0.tv_usec = t0.tv_usec + turnTime;
 			if(t0.tv_usec > 1000000)
 			{
@@ -123,7 +159,7 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 			}
 
 			//Disconnection checking
-			cout << "Arena " << serverId << " - " << turn << " ";
+			//cout << "Arena " << serverId << " - " << turn << " ";
 			players = server->getPlayers();
 			i = 0;
 			while(i < 8)
@@ -143,7 +179,7 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 				}
 				i++;
 			}
-			cout << endl;
+			//cout << endl;
 
 			j = 0;
 			while(j < 8)
@@ -174,10 +210,31 @@ int serverProcess(int serverId, int pipeIn, int pipeOut)
 		}
 	}
 
+	i = 0;
+	while(i < 8)
+	{	
+		server->dropPlayer(players[i]);
+		sa->removePlayer(players[i]);		
+		i++;
+	}
+
 	close(pipeIn);
 	close(pipeOut);
 
+	cout << "Average physics time(us): " << (sum*1.0)/turn << endl;
+	cout << "Physics time spike(us): " << spike << endl;
 	cout << "Arena Closed" << endl;
 
 	return 0;
+}
+
+void addBox(Arena* arena, int x, int y)
+{
+	ObjectStats *s;
+
+	s = new ObjectStats();
+	*s = craftObjectStats(9);
+	s->ps->box.x = x;
+	s->ps->box.y = y;
+	arena->addObject(new Object(s));
 }

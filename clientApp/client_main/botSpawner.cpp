@@ -54,11 +54,12 @@ int spawner(int pipeOut)
 {
 	int port, cid, sid, i, pid;
 
+	sid = 1;
 	i = 0;
-	while(i < 2)
+	while(i < 1)
 	{
 		cid = 0;
-		while(cid < 8)
+		while(cid < 7)
 		{
 			sid = i + 1;
 			port = 10000 + cid + 1 + 10*sid;

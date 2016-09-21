@@ -16,4 +16,6 @@ Thanks for reading this, tough!
 
 Gyff Mjord.
 
-
+1.2.1:
+- Added some client movement animations. Bmp files for the animation still needed.
+- Added some tracing information to debug network issues

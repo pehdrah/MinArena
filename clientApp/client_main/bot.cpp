@@ -18,7 +18,7 @@ int bot(int port, int client_id, int server_id)
 	int character, status;
 	SDL_Surface* screen;
 
-	loadObjectsBasics();
+	loadPrimaryStats("primaryTable.dat");
 	cout << "Objects basics loaded" << endl;
 
 	loadGeometries();
@@ -45,14 +45,14 @@ int bot(int port, int client_id, int server_id)
 int callArena(int character, int port, int client_id, int server_id)
 {
 	bool quit, sendEvent;
-	int i, w, h, id, event, clientPosition, arenaState, status, fainted, turnTime, lost;
+	int i, id, event, clientPosition, arenaState, status, fainted, turnTime, lost;
 	Client* ca;
 	ClientArena* cArena;
-	Object *playerObj;
-	ObjectStats *s;
+	G_Object *playerObj;
+	PrimaryStats *s;
 	State current;
 	G_Arena *gArena;
-	long long unsigned int t0, t1, te, tgraph;
+	long long unsigned int t0, t1, te, tgraph, turns;
 	ifstream file;
 	string line, address;
 
@@ -75,11 +75,6 @@ int callArena(int character, int port, int client_id, int server_id)
 		return 1;
 	}
 	cout << "Client connected" << endl;
-
-	w = 800;
-	h = 600;
-//	w = 640;
-//	h = 480;
 
 	turnTime = 80;
 	i = 0;
@@ -185,6 +180,8 @@ int callArena(int character, int port, int client_id, int server_id)
 		}
 	}
 	ca->disconnect();
+
+	cout << "Lost packets: " << lost << " tax:" << (lost*1.0)/turns*100 << endl;
 
 	return 0;
 }

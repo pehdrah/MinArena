@@ -14,20 +14,26 @@ ServerArena::ServerArena(Arena* arena)
 	playerObjects = new Object*[size];
 	playerStatus = new int[size];
 	calculateRtt = new bool[size];
+	receipt = new bool[size];
 	playerIds = new int[size];
 	rtts = new long[size];
 	qtrtts = new long[size];
 	commands = new int[size];
+	count = new int[size];
+	lost = new int[size];
 
 	i = 0;
 	while(i < 8)
 	{
 		calculateRtt[i] = false;
+		receipt[i] = false;
 		rtts[i] = 0;
 		qtrtts[i] = 0;
 		playerStatus[i] = -1;
 		playerIds[i] = -1;
 		commands[i] = 0;
+		count[i] = 0;
+		lost[i] = 0;
 		i++;
 	}
 }
@@ -64,6 +70,8 @@ void ServerArena::addPlayer(ObjectStats *stats, int client)
 		playerIds[position] = client;
 		playerStatus[position] = 0;
 		calculateRtt[position] = true;
+		count[position] = 0;
+		lost[position] = 0;
 		playerObjects[position] = new Object(stats);
 		stats->ps->box.x = rand() % arena->bigBox.w;
 		stats->ps->box.y = rand() % arena->bigBox.h;
@@ -82,6 +90,12 @@ void ServerArena::changeState()
 	{
 		if(playerIds[i] > -1)
 		{
+			if(!receipt[i])
+			{
+				lost[i]++;
+			}
+			count[i]++;
+			receipt[i] = false;
 			calculateRtt[i] = true;
 			playerStatus[i] = 0;
 			procCommand(i, commands[i]);
@@ -96,8 +110,8 @@ void ServerArena::changeState()
 	{
 		if(playerIds[i] != -1)
 		{
-//			cout << "player " << i << ": " << playerObjects[i]->stats->ps->box.x << ", " << playerObjects[i]->stats->ps->box.y << ", " << (int)playerObjects[i]->stats->ps->state << ", " << (int)playerObjects[i]->stats->ps->dx << ", " << (int)playerObjects[i]->stats->ps->dy << ", " << endl;
-			cout << "player " << i << ": " << playerObjects[i]->getType() << endl;
+			cout << "player " << i << ": " << playerObjects[i]->stats->ps->box.x << ", " << playerObjects[i]->stats->ps->box.y << ", " << (int)playerObjects[i]->stats->ps->state << ", " << (int)playerObjects[i]->stats->ps->dx << ", " << (int)playerObjects[i]->stats->ps->dy << ", " << endl;
+//			cout << "player " << i << ": " << playerObjects[i]->getType() << endl;
 		}
 		i++;
 	}
@@ -119,6 +133,7 @@ void ServerArena::removePlayer(int client)
 		playerIds[pos] = -1;
 		arena->removeObject(playerObjects[pos]);
 		cout << "player " << client << " disconnected" << endl;
+		cout << "- Turns in: " << count[pos] << " packets lost: " << lost[pos] << " tax: " << lost[pos]*100.0/count[pos] << endl;
 	}
 }
 
@@ -144,6 +159,7 @@ void ServerArena::prepareCommand(int client, int action)
 	if(pos > -1)
 	{
 		commands[pos] = action;
+		receipt[pos] = true;
 	}
 }
 
@@ -152,7 +168,13 @@ int ServerArena::findClientSpot(int client)
 	int i, pos;
 
 	pos = -1;
+
 	i = 0;
+	if(client < 0)
+	{
+		i = 8;
+	}
+
 	while(i < 8)
 	{
 		if(playerIds[i] == client)

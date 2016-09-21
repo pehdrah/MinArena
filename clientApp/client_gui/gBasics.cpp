@@ -148,35 +148,35 @@ Rect makeStateBox(Rect *box, unsigned char state)
 	{
 		case 0:
 			r.x = box->x + box->w/2 - r.w/2;
-			r.y = box->y + box->h - r.h;
+			r.y = box->y + box->h;
 			break;
 		case 1:
-			r.x = box->x + box->w - r.w;
-			r.y = box->y + box->h - r.h;
+			r.x = box->x + box->w;
+			r.y = box->y + box->h;
 			break;
 		case 2:
-			r.x = box->x + box->w - r.w;
+			r.x = box->x + box->w;
 			r.y = box->y + box->h/2 - r.h/2;
 			break;
 		case 3:
-			r.x = box->x + box->w - r.w;
-			r.y = box->y;
+			r.x = box->x + box->w;
+			r.y = box->y - r.h;
 			break;
 		case 4:
 			r.x = box->x + box->w/2 - r.w/2;
-			r.y = box->y;
+			r.y = box->y - r.h;
 			break;
 		case 5:
-			r.x = box->x;
-			r.y = box->y;
+			r.x = box->x - r.w;
+			r.y = box->y - r.h;
 			break;
 		case 6:
-			r.x = box->x;
+			r.x = box->x - r.w;
 			r.y = box->y + box->h/2 - r.h/2;
 			break;
 		case 7:
-			r.x = box->x;
-			r.y = box->y + box->h - r.h;
+			r.x = box->x - r.w;
+			r.y = box->y + box->h;
 			break;
 		default:
 			break;
@@ -219,4 +219,16 @@ SDL_Surface* loadCharacter(const char* filename, int r, int g, int b)
 	}
 
 	return image;
+}
+
+SDL_Rect toSDL_Rect(Rect r)
+{
+	SDL_Rect s;
+
+	s.x = r.x;
+	s.y = r.y;
+	s.w = r.w;
+	s.h = r.h;
+
+	return s;
 }

@@ -80,6 +80,7 @@ void G_Arena::makeArenaPiece(int x, int y, int w, int h)
 	G_Object *obj;
 
 	r = centerViewport(x, y, w, h);
+	sr = toSDL_Rect(r);
 
 	lifebar.w = 100;
 	lifebar.h = 5;
@@ -87,11 +88,6 @@ void G_Arena::makeArenaPiece(int x, int y, int w, int h)
 	lostLife.h = 5;
 	
 	SDL_BlitSurface(background, 0, mainSurface, 0);
-
-	sr.x = x;
-	sr.y = y;
-	sr.w = w;
-	sr.h = h;
 
 	red = SDL_MapRGB(mainSurface->format, 255, 0, 0);
 	green = SDL_MapRGB(mainSurface->format, 0, 255, 0);
@@ -156,32 +152,18 @@ void G_Arena::drawObject(G_Object *obj, Rect *r, SDL_Surface *surface)
 
 	if(areaOverlap(r, box))
 	{
-		dstRect.x = box->x;
-		dstRect.y = box->y;
-		dstRect.w = box->w;
-		dstRect.h = box->h;
+		dstRect = toSDL_Rect(*box);
 		if(obj->getType() == 1)
 		{
 			srcRect = new SDL_Rect;
-			srcRect->w = 30;
-			srcRect->h = 30;
-			srcRect->x = 30*getDirection(obj->getState());
-			srcRect->y = 0;
-			if(isMoving(obj->getState()))
-			{
-				srcRect->y = 30;
-			}
+			*srcRect = toSDL_Rect(obj->getAnimationBox());
 		}
 		SDL_BlitSurface(graphics[obj->getType()][obj->getKind()], srcRect, surface, &dstRect);
 		obj->updateGeometry();
 		drawGeometry(obj->surface, surface);
 		if(obj->getType() == 1)
 		{
-			stateBox = makeStateBox(box, obj->getState());
-			dstRect.x = stateBox.x;
-			dstRect.y = stateBox.y;
-			dstRect.w = stateBox.w;
-			dstRect.h = stateBox.h;
+			dstRect = toSDL_Rect(makeStateBox(box, obj->getState()));
 			SDL_FillRect(surface, &dstRect, green);
 		}
 	}

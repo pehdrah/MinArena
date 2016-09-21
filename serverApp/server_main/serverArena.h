@@ -8,8 +8,8 @@
 class ServerArena
 {
 	private:
-		int *playerIds, *playerStatus;
-		bool *calculateRtt;
+		int *playerIds, *playerStatus, *lost, *count;
+		bool *calculateRtt, *receipt;
 		long *rtts, *qtrtts;
 		Object** playerObjects;
 		int* commands;

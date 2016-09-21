@@ -11,7 +11,7 @@ clientArena:
 
 bots: bot
 	c++ -c botSpawner.cpp
-	c++ -o bots botSpawner.o bot.o clientArena.o ../lib_client/client.o -Wl -L../lib -L../client_gui -Wl -lBase -lGraphics
+	c++ -o bots botSpawner.o bot.o clientArena.o ../lib_client/client.o -Wl -L../../lib -L../client_gui -Wl -lBase -lGraphics
 
 bot:
-	c++ -c bot.cpp -I/usr/local/include
+	c++ -c bot.cpp -I/usr/local/include -I../

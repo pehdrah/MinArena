@@ -40,6 +40,7 @@ class G_Object
 		Rect* getBoxRef();
 		PrimaryStats* getPrimaryStats();
 		void changeState(unsigned char state);
+		Rect getAnimationBox();
 };
 
 #endif
